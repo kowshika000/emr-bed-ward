@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbedward_management=self.webpackChunkbedward_management||[]).push([[825],{825:(e,t,n)=>{function a(e){return({dispatch:t,getState:n})=>a=>r=>"function"==typeof r?r(t,n,e):a(r)}n.r(t),n.d(t,{thunk:()=>r,withExtraArgument:()=>u});var r=a(),u=a}}]);

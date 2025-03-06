@@ -10,11 +10,20 @@ import {
 import React, { useState } from "react";
 import BedIcon from "@mui/icons-material/Bed";
 import bedManagementData from "../../components/data";
+import { useDispatch } from "react-redux";
+import { bedOccupancy } from "../../Redux/slice/bed/bedSlice";
 
 const BedDetails = () => {
+  const dispatch = useDispatch()
   const [activeFilter, setActiveFilter] = useState("All");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedBed, setSelectedBed] = useState(null);
+
+  const [allBed, setAllBed] = useState([])
+
+  useEffect(()=>{
+   dispatch(bedOccupancy())
+  },[])
 
   const filters = [
     { label: "All", color: "#000000" },

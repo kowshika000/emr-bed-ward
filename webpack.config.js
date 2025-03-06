@@ -2,14 +2,12 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const path = require("path");
 const Dotenv = require("dotenv-webpack");
-
 const deps = require("./package.json").dependencies;
-
 const printCompilationMessage = require("./compilation.config.js");
 
 module.exports = (_, argv) => ({
   output: {
-    publicPath: "http://localhost:3003/",
+    publicPath: "https://emr-bedward-child4.web.app/",
   },
 
   resolve: {
@@ -20,6 +18,11 @@ module.exports = (_, argv) => ({
     port: 3003,
     historyApiFallback: true,
     watchFiles: [path.resolve(__dirname, "src")],
+    hot: false, // 🔴 Disable Hot Module Replacement (HMR)
+    liveReload: false, // 🔴 Prevent WebSockets from reconnecting
+    client: {
+      webSocketURL: "auto://0.0.0.0:0/ws", // 🔴 Prevent WebSocket issues
+    },
     onListening: function (devServer) {
       const port = devServer.server.address().port;
 
@@ -75,10 +78,14 @@ module.exports = (_, argv) => ({
     new ModuleFederationPlugin({
       name: "emr_bedAndWard",
       filename: "remoteEntry.js",
-      remotes: {},
+      remotes: {
+        emr_ui: "emr_ui@https://emr-ui-parent-25225.web.app/remoteEntry.js",
+      },
       exposes: {
         "./BedAndWardHeaderTab": "./src/components/Header.jsx",
-        "./WardRoomDetail": "./src/BedWardManagement/WardOccupancy/RoomDetail.jsx",
+        "./WardRoomDetail":
+          "./src/BedWardManagement/WardOccupancy/RoomDetail.jsx",
+        "./bedAndWardReducer": "./src/Redux/reducer.jsx",
       },
       shared: {
         ...deps,

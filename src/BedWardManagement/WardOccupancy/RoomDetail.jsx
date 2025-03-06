@@ -59,7 +59,9 @@ const bedsData = [
 const RoomDetails = () => {
   const { name } = useParams();
   const location = useLocation();
-  const { vacant, occupied } = location.state;
+  const { wardName } = location.state;
+
+  console.log("name:", wardName);
 
   const [roomCategory, setRoomCategory] = useState("");
   const [bedType, setBedType] = useState("");
