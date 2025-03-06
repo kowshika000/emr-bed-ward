@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbedward_management=self.webpackChunkbedward_management||[]).push([[384],{4384:(e,a,d)=>{d.r(a),d.d(a,{default:()=>s});var n=d(4929),l=d(4216),r=d(1454);const s=(0,n.combineReducers)({allWard:l.A,allBed:r.A})}}]);
