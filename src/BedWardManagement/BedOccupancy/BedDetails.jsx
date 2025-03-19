@@ -12,6 +12,7 @@ import BedIcon from "@mui/icons-material/Bed";
 import bedManagementData from "../../components/data";
 import { useDispatch } from "react-redux";
 import { bedOccupancy } from "../../Redux/slice/bed/bedSlice";
+import { useEffect } from "react";
 
 const BedDetails = () => {
   const dispatch = useDispatch()
