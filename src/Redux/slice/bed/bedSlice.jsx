@@ -19,7 +19,7 @@ export const bedOccupancy = createAsyncThunk(
 const bedOccupancySlice = createSlice({
   name: "bedOccupancy",
   initialState: {
-    bedOccupancyData: [],
+    data: [],
     loading: false,
     error: null,
   },
@@ -32,7 +32,7 @@ const bedOccupancySlice = createSlice({
       })
       .addCase(bedOccupancy.fulfilled, (state, action) => {
         state.loading = false;
-        state.bedOccupancyData = action.payload.data;
+        state.data = action.payload.data;
       })
       .addCase(bedOccupancy.rejected, (state, action) => {
         state.loading = false;

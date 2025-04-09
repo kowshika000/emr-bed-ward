@@ -1,35 +1,32 @@
-import {
-  Box,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React, { useState } from "react";
 import BedIcon from "@mui/icons-material/Bed";
-import bedManagementData from "../../components/data";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bedOccupancy } from "../../Redux/slice/bed/bedSlice";
 import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const BedDetails = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [activeFilter, setActiveFilter] = useState("All");
-  const [openDialog, setOpenDialog] = useState(false);
   const [selectedBed, setSelectedBed] = useState(null);
 
-  const [allBed, setAllBed] = useState([])
+  const fromTab = location.state?.fromTab;
 
-  useEffect(()=>{
-   dispatch(bedOccupancy())
-  },[])
+  const { data } = useSelector((state) => state?.bedAndWard?.allBed);
+  console.log("bed data", data);
+
+  useEffect(() => {
+    dispatch(bedOccupancy());
+  }, []);
 
   const filters = [
     { label: "All", color: "#000000" },
-    { label: "Vacant", color: "#81C784" },
-    { label: "Admitted", color: "#4FC3F7" },
+    { label: "VACANT", color: "#81C784" },
+    { label: "ADMITTED", color: "#4FC3F7" },
     { label: "Pre Discharge", color: "#FFAB91" },
     { label: "Patient Reservation", color: "#F06292" },
     { label: "Blocked", color: "#BDBDBD" },
@@ -38,27 +35,29 @@ const BedDetails = () => {
   // Filter the bed data based on the selected filter
   const filteredBeds =
     activeFilter === "All"
-      ? bedManagementData
-      : bedManagementData.filter((bed) => bed.status === activeFilter);
+      ? data
+      : data.filter((bed) => bed.bedStatus === activeFilter);
 
   // Group beds by ward
   const groupedBeds = filteredBeds.reduce((acc, bed) => {
-    if (!acc[bed.wardType]) {
-      acc[bed.wardType] = [];
+    if (!acc[bed.wardName]) {
+      acc[bed.wardName] = [];
     }
-    acc[bed.wardType].push(bed);
+    acc[bed.wardName].push(bed);
     return acc;
   }, {});
 
-  // Handle the dialog open and close
-  const handleOpenDialog = (bed) => {
-    setSelectedBed(bed);
-    setOpenDialog(true);
-  };
+  const handleSelectBed = (bed) => {
+    if (bed.bedStatus === "VACANT") {
+      setSelectedBed(bed);
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedBed(null);
+      // Navigate to Registration Page with Bed Details
+      navigate(`/secure/registration?tab=${fromTab}`, {
+        state: { selectedBed: bed },
+      });
+    } else {
+      alert("Only vacant beds can be selected!");
+    }
   };
 
   return (
@@ -129,9 +128,7 @@ const BedDetails = () => {
             borderRadius: 2,
           }}
         >
-          <h6 sx={{ mb: 2 }}>
-            Ward: {wardName}
-          </h6>
+          <h6 sx={{ mb: 2 }}>Ward: {wardName}</h6>
           <Box
             sx={{
               display: "flex",
@@ -154,29 +151,29 @@ const BedDetails = () => {
                   margin: "10px",
                   cursor: "pointer",
                   // maxWidth: "150px",
-                  padding:"10px",
+                  padding: "10px",
                   border: `2px solid ${
-                    filters.find((filter) => filter.label === bed.status)
+                    filters.find((filter) => filter.label === bed.bedStatus)
                       ?.color || "black"
                   }`,
                 }}
-                onClick={() => handleOpenDialog(bed)}
+                onClick={() => handleSelectBed(bed)}
               >
                 <BedIcon
                   sx={{
                     fontSize: "50px",
                     color:
-                      filters.find((filter) => filter.label === bed.status)
+                      filters.find((filter) => filter.label === bed.bedStatus)
                         ?.color || "black",
                   }}
                 />
-                  <Box>
-                  <Typography variant="body1">Ward: {bed.ward}</Typography>
-                  <Typography variant="body2">Room: {bed.room}</Typography>
+                <Box>
+                  <Typography variant="body1">Ward: {bed.wardType}</Typography>
                   <Typography variant="body2">
-                    Bed No: {bed.bedNo}
-                  </Typography>{" "}
-                  <Typography variant="body2">Type: {bed.bedType}</Typography>
+                    Room: {bed.roomNoOrName}
+                  </Typography>
+                  <Typography variant="body2">Bed No: {bed.bedNo}</Typography>{" "}
+                  {/* <Typography variant="body2">Type: {bed.bedType}</Typography> */}
                   <Typography variant="body2">Rate: {bed.rate}</Typography>
                   {/* <Typography variant="body2">Status: {bed.status}</Typography> */}
                 </Box>
@@ -185,45 +182,6 @@ const BedDetails = () => {
           </Box>
         </Box>
       ))}
-
-      {/* Dialog to show Bed Details */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Bed Management</DialogTitle>
-        <DialogContent>
-          {selectedBed && (
-            <>
-              <Typography variant="body1">
-                <strong>Ward:</strong> {selectedBed.wardType}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Room Category:</strong> {selectedBed.roomCategory}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Bed No:</strong> {selectedBed.bedNo}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Bed Type:</strong> {selectedBed.bedType}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Type:</strong> {selectedBed.type}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Rate:</strong> {selectedBed.rate}
-              </Typography>
-            </>
-          )}
-        </DialogContent>
-        {/* <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions> */}
-      </Dialog>
     </Box>
   );
 };
