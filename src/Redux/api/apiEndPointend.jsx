@@ -3,5 +3,5 @@ export const API_ENDPOINTS = {
   WARD_OCCUPANCY: "ward/getAlloccupancy",
   // SEARCH_WARD:"",
   // bed
-  BED_OCCUPANCY: "bed/ward",
+  BED_OCCUPANCY: "bed/getAllBedOccupancy",
 };
